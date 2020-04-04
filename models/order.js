@@ -12,6 +12,7 @@ const OrderSchema = new Schema({
 		quantity: Number
 	}],
 	executionDate: { type: Date },
+	completed: Boolean
 })
 
 OrderSchema.methods = {

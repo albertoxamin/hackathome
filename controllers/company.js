@@ -1,10 +1,11 @@
 const passport = require('passport')
 const sanitize = require('../utils/sanitize')
 const mongoose = require('mongoose')
-const colors = require('colors')
+
 
 const Company = mongoose.model('Company')
 const Good = mongoose.model('Good')
+const Order = mongoose.model('Order')
 
 module.exports = (router) => {
 	router
@@ -127,8 +128,6 @@ module.exports = (router) => {
 				Company.findOne({ _id: req.params.id }).populate({ path: 'owner' }).exec(function (err, company) {
 					if (err) return sanitize.cleanError(res, err)
 					if (company) {
-						console.log(req.user)
-						console.log(company.owner)
 						if (!company.owner.equals(req.user))
 							return res.status(401).send()
 						console.log('Company deleted ' + `${company._id}`.red)
@@ -138,4 +137,27 @@ module.exports = (router) => {
 					return res.status(400).send()
 				})
 			})
+	
+	router
+			.route('/company/:id/order')
+			.get(
+				passport.authenticate('bearer', { session: false }),
+				(req, res) => {
+					Company.findOne({ _id: req.params.id }).populate('owner').exec(function (err, company) {
+						if (err) return sanitize.cleanError(res, err)
+						if (company) {
+							if (!company.owner.equals(req.user))
+								return res.status(401).send()
+							Order.find({ 'company': req.params.id }).populate('customer goods.item').exec((err, docs) => {
+								if (err) return sanitize.cleanError(res, err)
+								return res.send(docs.map(x => {
+									x = x.toObject()
+									delete x.company
+									x.customer = sanitize.cleanUser(x.customer, true)
+									return sanitize.cleanOrder(x)
+								}))
+							})
+						}
+					})
+				})	
 }

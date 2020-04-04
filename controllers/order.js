@@ -12,9 +12,11 @@ module.exports = (router) => {
 		.get(
 			passport.authenticate('bearer', { session: false }),
 			(req, res) => {
-				Order.find({ 'customer': req.user._id }).populate('goods').lean().exec((err, docs) => {
+				Order.find({ 'customer': req.user._id }).populate('company goods.item').lean().exec((err, docs) => {
 					if (err) return sanitize.cleanError(res, err)
-					return res.status(200).send(sanitize.clean(docs))
+					return res.status(200).send(docs.map(x => {
+						return sanitize.cleanOrder(x)
+					}))
 				})
 			})
 		.post(
@@ -40,10 +42,7 @@ module.exports = (router) => {
 						})
 						order.save((err, doc) => {
 							if (err) return sanitize.cleanError(res, err)
-							doc = sanitize.clean(doc)
-							doc.goods = sanitize.clean(doc.goods)
-							doc.customer = sanitize.cleanUser(doc.customer)
-							doc.company = sanitize.clean(doc.company)
+							doc = sanitize.cleanOrder(doc)
 							return res.send(doc)
 						})
 					})
