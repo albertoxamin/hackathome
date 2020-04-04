@@ -4,10 +4,10 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.ObjectId
 
 const OrderSchema = new Schema({
-	customer: ObjectId,
-	company: ObjectId,
+	customer: { type: ObjectId, ref: 'User' },
+	company: { type: ObjectId, ref: 'Company' },
 	date: { type: Date, default: Date.now },
-	goods: [ObjectId],
+	goods: [{ type: ObjectId, ref: 'Good' }],
 	executionDate: { type: Date}, 
 })
 

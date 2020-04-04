@@ -17,8 +17,16 @@ module.exports = {
 		delete obj.updatedAt
 		return obj
 	},
-	cleanError : function(res, err){
+	cleanError: function(res, err){
 		console.log('500 '.red + err.message)
 		res.status(500).send(err.message)
+	},
+	cleanUser: function(user){
+		let obj = this.clean(user)
+		delete user.googleId
+		delete user.accessToken
+		delete user.email
+		delete user.id
+		return obj
 	}
 }

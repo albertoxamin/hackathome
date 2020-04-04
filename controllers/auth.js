@@ -14,13 +14,4 @@ module.exports = (router) => {
 				return res.send(sanitize.clean(req.user))
 			}
 		)
-
-	router
-		.route('/')
-		.get(
-			passport.authenticate('bearer', { session: false }),
-			(req, res) => {
-				return res.send('uuu nice user')
-			}
-		)
 }
