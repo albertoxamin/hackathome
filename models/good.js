@@ -11,7 +11,8 @@ const GoodSchema = new Schema({
 		depth: Number,
 		height: Number
 	},
-	quantity: Number
+	stockQty: Number,
+	price: Number
 })
 
 GoodSchema.methods = {

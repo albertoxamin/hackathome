@@ -1,7 +1,6 @@
 const passport = require('passport')
 const sanitize = require('../utils/sanitize')
 const mongoose = require('mongoose')
-const colors = require('colors')
 
 const User = mongoose.model('User')
 
