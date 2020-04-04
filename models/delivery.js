@@ -7,7 +7,7 @@ const DeliverySchema = new Schema({
 	company: { type: ObjectId, ref: 'Company' },
 	orders: [{ type: ObjectId, ref: 'Order' }],
 	vehicle: { type: ObjectId, ref: 'Vehicle' },
-	executionDate: { type: Date}, 
+	executionDate: { type: Date},
 })
 
 DeliverySchema.methods = {
