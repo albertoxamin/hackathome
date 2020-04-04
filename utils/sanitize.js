@@ -25,6 +25,7 @@ module.exports = {
 		let obj = this.clean(user)
 		delete user.googleId
 		delete user.accessToken
+		delete user.homeLocation
 		delete user.email
 		delete user.id
 		return obj
