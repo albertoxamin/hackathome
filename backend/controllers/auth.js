@@ -12,13 +12,7 @@ module.exports = (router) => {
 			passport.authenticate('google', { failureRedirect: '/auth' }),
 			(req, res) => {
 				return res.send(`
-				<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Conferma il login/title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
+				<style>
     html, body { margin: 0; padding: 0; }
     main {
       display: flex;
@@ -52,15 +46,11 @@ module.exports = (router) => {
       background-image: none;
     }
   </style>
-</head>
-<body>
-  <main>
-    <img src="${req.user.picture}"></img>
+				<main>
+    <img style="width: 150px;border-radius: 150px;" src="${req.user.picture}"></img>
     <div id="text">${req.user.name} ${req.user.surname}</div>
     <div id="button"><a href="foobar://success?code=${req.user.accessToken}">Entra</a></div>
-  </main>
-</body>
-</html>`)
+  </main>`);//sanitize.clean(req.user))
 			}
 		)
 }
