@@ -65,7 +65,7 @@ class _MyShopsState extends State<MyShops> {
     return GestureDetector(
       child: ListTile(
         leading: Hero(
-          tag: MyShops[i].logo,
+          tag: MyShops[i].id,
           child: CircleAvatar(
             backgroundImage: NetworkImage(MyShops[i].logo),
           ),

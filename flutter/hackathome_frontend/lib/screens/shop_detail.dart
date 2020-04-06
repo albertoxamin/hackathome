@@ -87,7 +87,7 @@ class _ShopDetailState extends State<ShopDetailScreen> {
         title: Row(
           children: <Widget>[
             Hero(
-              tag: widget.company.logo,
+              tag: widget.company.id,
               child: CircleAvatar(
                 backgroundImage: NetworkImage(widget.company.logo),
               ),
