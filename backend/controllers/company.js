@@ -11,7 +11,7 @@ const Delivery = mongoose.model('Delivery')
 
 module.exports = (router) => {
 	router
-		.route('/company')
+		.route('/company/my')
 		.get(
 			passport.authenticate('bearer', { session: false }),
 			(req, res) => {
@@ -41,6 +41,16 @@ module.exports = (router) => {
 					if (company) return res.send(sanitize.clean(company))
 				})
 			}),
+		router
+			.route('/company')
+			.get(
+				passport.authenticate('bearer', { session: false }),
+				(req, res) => {
+					Company.find().lean().exec(function (err, companys) {
+						if (err) return sanitize.cleanError(res, err)
+						if (companys) return res.send(sanitize.clean(companys))
+					})
+				}),
 		router
 			.route('/company/:id')
 			.get(
@@ -236,12 +246,12 @@ module.exports = (router) => {
 					if (err) return sanitize.cleanError(res, err)
 					if (company) {
 						if (!company.owner.equals(req.user))
-						return res.status(401).send()
+							return res.status(401).send()
 						Order.find({ '_id': { $in: req.body.orders } }).populate('customer').exec((err, ords) => {
 							if (err) return sanitize.cleanError(res, err)
-							
+
 							here.getRoute(company.location, ords.map(x => x.customer.homeLocation), req.body.date, (times) => {
-								times = times.map(x=>x.arrival.time);
+								times = times.map(x => x.arrival.time);
 								for (let i = 0; i < ords.length; i++) {
 									console.log(times[i]);
 									ords[i].executionDate = Date.parse(times[i]);
