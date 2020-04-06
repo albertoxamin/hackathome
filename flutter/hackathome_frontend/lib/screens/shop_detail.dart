@@ -1,4 +1,6 @@
+import 'package:anylivery/components/good_tile.dart';
 import 'package:anylivery/models/good.dart';
+import 'package:anylivery/models/order.dart';
 import 'package:anylivery/screens/company_orders_screen.dart';
 import 'package:anylivery/services/api.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class ShopDetailScreen extends StatefulWidget {
 
 class _ShopDetailState extends State<ShopDetailScreen> {
   List<Good> goods = [];
+  List<OrderQty> cart = [];
 
   @override
   void initState() {
@@ -34,6 +37,45 @@ class _ShopDetailState extends State<ShopDetailScreen> {
     setState(() {
       goods = s;
     });
+  }
+
+  void addToCart(Good good) {
+    var i = cart.indexWhere((x) => x.item == good);
+    if (i != -1)
+      cart[i].quantity++;
+    else
+      cart.add(new OrderQty(good, 1));
+    setState(() {});
+  }
+
+  void removeFromCart(Good good) {
+    var i = cart.indexWhere((x) => x.item == good);
+    if (i != -1) {
+      cart[i].quantity--;
+      if (cart[i].quantity <= 0) cart.removeAt(i);
+    }
+    setState(() {});
+  }
+
+  bool isInCart(Good good) {
+    return (cart.indexWhere((x) => x.item == good) != -1);
+  }
+
+  int getTotal() {
+    int tot = 0;
+    for (var item in cart) {
+      tot += item.quantity;
+    }
+    return tot;
+  }
+
+  void placeOrder() async {
+    var res = await API.sendOrder(
+        widget.company.id,
+        cart
+            .map((oq) => {'quantity': oq.quantity, 'item': oq.item.id})
+            .toList());
+    Navigator.of(context).pop();
   }
 
   @override
@@ -56,19 +98,48 @@ class _ShopDetailState extends State<ShopDetailScreen> {
           ],
         ),
         actions: <Widget>[
-          widget.isOwner ? IconButton(icon: Icon(Icons.shopping_basket), onPressed: (){
-            Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CompanyOrdersScreen(company: widget.company, isOwner: true,),
-          ),
-        );
-          }) : Container(width: 0, height: 0,)
+          widget.isOwner
+              ? IconButton(
+                  icon: Icon(Icons.shopping_basket),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CompanyOrdersScreen(
+                          company: widget.company,
+                          isOwner: true,
+                        ),
+                      ),
+                    );
+                  })
+              : Container(
+                  width: 0,
+                  height: 0,
+                )
         ],
       ),
       floatingActionButton: (widget.isOwner)
-          ? FloatingActionButton.extended(onPressed: () => {}, label: Text("Aggiungi merce"))
-          : Container(width: 0, height: 0,),
+          ? FloatingActionButton.extended(
+              onPressed: () => {}, label: Text("Aggiungi merce"))
+          : (cart.length > 0)
+              ? FloatingActionButton.extended(
+                  onPressed: placeOrder,
+                  label: Text("Ordina"),
+                  icon: Column(
+                    children: [
+                      Text(
+                        "${getTotal()}",
+                        textAlign: TextAlign.center,
+                      ),
+                      Icon(Icons.shopping_cart),
+                    ],
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                  ),
+                )
+              : Container(
+                  width: 0,
+                  height: 0,
+                ),
       body: Padding(
           padding: EdgeInsets.all(16.0),
           child: ListView.builder(
@@ -84,7 +155,8 @@ class _ShopDetailState extends State<ShopDetailScreen> {
     if (i == 0) {
       return Column(
         children: <Widget>[
-          Image.network("https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=7K7d_HphcjV8P69RwYuJ2zOUpeYB95ESYfjkkS24Us4&c=${widget.company.location}&z=13"),
+          Image.network(
+              "https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=7K7d_HphcjV8P69RwYuJ2zOUpeYB95ESYfjkkS24Us4&c=${widget.company.location}&z=13"),
           Padding(
               padding: EdgeInsets.all(10.0),
               child: Text(
@@ -95,16 +167,11 @@ class _ShopDetailState extends State<ShopDetailScreen> {
       );
     }
     i = i - 1;
-    return GestureDetector(
-      child: ListTile(title: Text(goods[i].name), subtitle: Text(goods[i].description), trailing: Text(goods[i].price.toString())),
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ShopDetailScreen(company: goods[i]),
-        //   ),
-        // );
-      },
+    return GoodTile(
+      good: goods[i],
+      isOnCart: isInCart(goods[i]),
+      addCb: () => addToCart(goods[i]),
+      removeCb: () => removeFromCart(goods[i]),
     );
   }
 }

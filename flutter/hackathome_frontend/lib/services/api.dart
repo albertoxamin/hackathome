@@ -60,6 +60,16 @@ class API {
     return obj['orders'];
   }
 
+  static sendOrder(
+      String companyId, List<dynamic> goods) async {
+    print("qua arriva");
+    var response = await postData(
+        {'companyId': companyId, 'goods': goods},
+        '/order');
+    dynamic obj = jsonDecode(response.body);
+    return obj['orders'];
+  }
+
   static setHome(var lat, var lon) async {
     var response = await postData({
       'homeLocation': {'lat': lat, 'lon': lon}
@@ -69,7 +79,8 @@ class API {
 
   static _getToken() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    token = localStorage.getString('token').replaceAll('"', '');
+    if (localStorage.containsKey('token'))
+      token = localStorage.getString('token').replaceAll('"', '');
   }
 
   static postData(data, apiUrl) async {

@@ -13,6 +13,11 @@ class Volume {
         "depth": depth,
         "height": height
       };
+
+  @override
+  String toString() {
+    return "$width x $depth x $height";
+  }
 }
 
 class Good {
