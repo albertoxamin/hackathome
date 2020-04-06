@@ -80,40 +80,23 @@ class _ShopDetailState extends State<ShopDetailScreen> {
     );
   }
 
-  details(good) {
-    return (good.picture != null)
-        ? [
-            Hero(
-              tag: good.name,
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(good.picture),
-              ),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Text(good.name),
-          ]
-        : [Text(good.name)];
-  }
-
   Widget getRow(int i) {
     if (i == 0) {
-      return Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Text(
-            widget.company.description,
-            textAlign: TextAlign.center,
-          ));
+      return Column(
+        children: <Widget>[
+          Image.network("https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=7K7d_HphcjV8P69RwYuJ2zOUpeYB95ESYfjkkS24Us4&c=${widget.company.location}&z=13"),
+          Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                widget.company.description,
+                textAlign: TextAlign.center,
+              )),
+        ],
+      );
     }
     i = i - 1;
     return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Row(
-          children: details(goods[i]),
-        ),
-      ),
+      child: ListTile(title: Text(goods[i].name), subtitle: Text(goods[i].description), trailing: Text(goods[i].price.toString())),
       onTap: () {
         // Navigator.push(
         //   context,

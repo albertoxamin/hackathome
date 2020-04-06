@@ -4,35 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:anylivery/services/api.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class MyShops extends StatefulWidget {
-  MyShops({Key key}) : super(key: key);
+class Shops extends StatefulWidget {
+  Shops({Key key}) : super(key: key);
 
-  _MyShopsState state = new _MyShopsState();
+  _ShopsState state = new _ShopsState();
 
   @override
-  _MyShopsState createState() => state;
+  _ShopsState createState() => state;
 }
 
-class _MyShopsState extends State<MyShops> {
-  List<Company> MyShops = [];
+class _ShopsState extends State<Shops> {
+  List<Company> Shops = [];
   bool loaded = false;
 
   @override
   void initState() {
     super.initState();
-    MyShops = [];
+    Shops = [];
     fetchBackend();
   }
 
   void fetchBackend() async {
     List<dynamic> list =
-        (true ? await API.getMyStores() : await API.getStores());
+        (false ? await API.getMyStores() : await API.getStores());
     List<Company> s = [];
     for (var c in list) {
       s.add(Company.fromJson(c));
     }
     setState(() {
-      MyShops = s;
+      Shops = s;
       loaded = true;
     });
   }
@@ -43,13 +43,13 @@ class _MyShopsState extends State<MyShops> {
         home: Scaffold(
           backgroundColor: Colors.white,
       appBar: AppBar(
-        title: (true)
+        title: (false)
             ? Text("Miei Negozi")
             : Text("Negozi nelle vicinanze"),
       ),
       body: (loaded)
           ? ListView.builder(
-              itemCount: MyShops.length,
+              itemCount: Shops.length,
               itemBuilder: (BuildContext context, int position) {
                 return getRow(position);
               },
@@ -65,21 +65,21 @@ class _MyShopsState extends State<MyShops> {
     return GestureDetector(
       child: ListTile(
         leading: Hero(
-          tag: MyShops[i].logo,
+          tag: Shops[i].logo,
           child: CircleAvatar(
-            backgroundImage: NetworkImage(MyShops[i].logo),
+            backgroundImage: NetworkImage(Shops[i].logo),
           ),
         ),
-        title: Text(MyShops[i].name),
-        subtitle: Text(MyShops[i].description),
+        title: Text(Shops[i].name),
+        subtitle: Text(Shops[i].description),
       ),
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ShopDetailScreen(
-              company: MyShops[i],
-              isOwner: true,
+              company: Shops[i],
+              isOwner: false,
             ),
           ),
         );

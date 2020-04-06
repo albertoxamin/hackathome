@@ -7,7 +7,7 @@ class OrderQty {
 
   OrderQty.fromJson(Map<String, dynamic> json)
       : quantity = json['quantity'],
-        item = Good.fromJson(json['item']);
+        item = (json['item'].runtimeType != String) ? Good.fromJson(json['item']): null;
 
   Map<String, dynamic> toJson() =>
       {"quantity": quantity, "item": item.toJson()};
@@ -16,6 +16,9 @@ class OrderQty {
 class Order {
   User customer;
   List<dynamic> goods;
+  DateTime date;
+  DateTime executionDate;
+  String id;
 
   static goodsList(json) {
     List<dynamic> list = json;
@@ -28,7 +31,10 @@ class Order {
 
   Order.fromJson(Map<String, dynamic> json)
       : goods = goodsList(json['goods']),
-        customer = User.fromJson(json['customer']);
+        customer = User.fromJson(json['customer']),
+        id = json['id'] ?? json['_id'],
+        date = DateTime.parse(json['date']),
+        executionDate = json['executionDate']!= null? DateTime.parse(json['executionDate']): DateTime(0);
 
   // Map<String, dynamic> toJson() => {
   //       "id": id,

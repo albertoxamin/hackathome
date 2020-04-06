@@ -1,8 +1,11 @@
+import 'package:anylivery/components/order_tile.dart';
 import 'package:anylivery/models/good.dart';
 import 'package:anylivery/models/order.dart';
+import 'package:anylivery/screens/shipping.dart';
 import 'package:anylivery/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:anylivery/models/company.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class CompanyOrdersScreen extends StatefulWidget {
   // Declare a field that holds the Todo.
@@ -17,7 +20,8 @@ class CompanyOrdersScreen extends StatefulWidget {
 }
 
 class _CompanyOrdersState extends State<CompanyOrdersScreen> {
-  List<Order> goods = [];
+  List<Order> orders = [];
+  List<Order> ordersToShip = [];
 
   @override
   void initState() {
@@ -32,8 +36,16 @@ class _CompanyOrdersState extends State<CompanyOrdersScreen> {
       s.add(Order.fromJson(c));
     }
     setState(() {
-      goods = s;
+      orders = s;
     });
+  }
+
+  void addOrder(order) {
+    if (!ordersToShip.contains(order))
+      ordersToShip.add(order);
+    else
+      ordersToShip.remove(order);
+    setState(() {});
   }
 
   @override
@@ -50,13 +62,44 @@ class _CompanyOrdersState extends State<CompanyOrdersScreen> {
         //   widget.isOwner ? IconButton(icon: Icon(Icons.shopping_basket), onPressed: (){}) : Container(width: 0, height: 0,)
         // ],
       ),
-      // floatingActionButton: (widget.isOwner)
-      //     ? FloatingActionButton.extended(onPressed: () => {}, label: Text("Aggiungi merce"))
-      //     : Container(width: 0, height: 0,),
+      floatingActionButton: (ordersToShip.length > 0)
+          ? FloatingActionButton.extended(
+              onPressed: () => {
+                DatePicker.showDateTimePicker(context,
+                    showTitleActions: true,
+                    minTime: DateTime.now(), onConfirm: (date) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShippingScreen(
+                        orders: ordersToShip,
+                        shippingDate: date,
+                        company: widget.company,
+                      ),
+                    ),
+                  );
+                }, currentTime: DateTime.now(), locale: LocaleType.it)
+              },
+              label: Text("Pianifica Spedizione"),
+              icon: Column(
+                children: [
+                  Text(
+                    "${ordersToShip.length}",
+                    textAlign: TextAlign.center,
+                  ),
+                  Icon(Icons.local_shipping),
+                ],
+                crossAxisAlignment: CrossAxisAlignment.center,
+              ),
+            )
+          : Container(
+              width: 0,
+              height: 0,
+            ),
       body: Padding(
           padding: EdgeInsets.all(16.0),
           child: ListView.builder(
-            itemCount: goods.length,
+            itemCount: orders.length,
             itemBuilder: (BuildContext context, int position) {
               return getRow(position);
             },
@@ -65,25 +108,10 @@ class _CompanyOrdersState extends State<CompanyOrdersScreen> {
   }
 
   Widget getRow(int i) {
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            CircleAvatar(backgroundImage: NetworkImage(goods[i].customer.picture),)
-            Text("Cliente: ${goods[i].customer.name}"),
-            Text("${goods[i].goods.length} Pezzi"),
-          ],
-        ),
-      ),
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => CompanyOrdersScreen(company: goods[i]),
-        //   ),
-        // );
-      },
+    return OrderTile(
+      order: orders[i],
+      selected: ordersToShip.contains(orders[i]),
+      deliveryCb: () => addOrder(orders[i]),
     );
   }
 }

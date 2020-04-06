@@ -57,7 +57,7 @@ class _ProfileState extends State<Profile> {
         await API.setHome(_locationData.latitude, _locationData.longitude);
     print(usr);
     setState(() {
-      user = usr;
+      user = User.fromJson(usr);
     });
   }
 
@@ -129,15 +129,8 @@ class _ProfileState extends State<Profile> {
             Container(
               margin: EdgeInsets.only(top: 43),
               child: Text(
-                (user != null) ? "${user.homeLocation.lat} ${user.homeLocation.lon}" : "",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: AppColors.primaryText,
-                  fontFamily: "Helvetica Neue",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  letterSpacing: -0.096,
-                ),
+                (user != null) ? "Le consegne verranno effetuate qui \n${user.homeLocation}" : "Indirizzo di ritiro non impostato",
+                textAlign: TextAlign.center
               ),
             ),
             RaisedButton.icon(

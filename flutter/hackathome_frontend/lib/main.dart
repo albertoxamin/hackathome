@@ -14,7 +14,7 @@ class App extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return MaterialApp(
       home: CheckAuth(),
-      routes: <String, WidgetBuilder> {
+      routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => TabScreen(),
       },
     );

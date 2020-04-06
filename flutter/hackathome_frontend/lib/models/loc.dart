@@ -11,4 +11,9 @@ class Loc {
       'lat' : lat,
       'lon': lon,
     };
+
+  @override
+  String toString() {
+    return "$lat,$lon";
+  }
 }
