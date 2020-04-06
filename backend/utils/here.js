@@ -21,7 +21,7 @@ const getRoute = (base, stops, time, cb) => {
 	request.get(url, (err, res, body) => {
 		if (err)
 			return console.log(err)
-		cb(JSON.parse(body).routes[0].sections.map(x => x.time))
+		cb(JSON.parse(body).routes[0].sections)
 	})
 }
 

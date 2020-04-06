@@ -241,9 +241,13 @@ module.exports = (router) => {
 							if (err) return sanitize.cleanError(res, err)
 							
 							here.getRoute(company.location, ords.map(x => x.customer.homeLocation), req.body.date, (times) => {
+								times = times.map(x=>x.arrival.time);
 								for (let i = 0; i < ords.length; i++) {
-									ords[i].executionDate = times[i];
-									ords[i].save()
+									console.log(times[i]);
+									ords[i].executionDate = Date.parse(times[i]);
+									ords[i].save((err, ok) => {
+										if (err) return sanitize.cleanError(res, err)
+									})
 								}
 								let deliv = new Delivery({
 									company: company,
