@@ -1,6 +1,7 @@
 import 'package:anylivery/values/values.dart';
 import 'package:flutter/material.dart';
 import 'package:anylivery/screens/profile.dart';
+import 'package:anylivery/screens/myshops.dart';
 
 class TabScreen extends StatefulWidget {
   @override
@@ -21,7 +22,9 @@ class TabState extends State<TabScreen> {
   void _definePages() {
     _pages = [
       Container(color: Colors.blue),
-      Container(color: Colors.green),
+      MaterialApp(
+        home: MyShops(),
+      ),
       Profile(),
     ];
   }

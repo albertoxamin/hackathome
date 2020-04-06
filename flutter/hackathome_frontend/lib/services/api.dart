@@ -26,6 +26,29 @@ class API {
     return jsonDecode(response.body);
   }
 
+  static getMyStores() async {
+    var response = await getData('/company');
+    List<dynamic> list = jsonDecode(response.body);
+    return list;
+  }
+  static getCompanyGoods(id) async {
+    var response = await getData('/company/$id/good');
+    List<dynamic> list = jsonDecode(response.body);
+    return list;
+  }
+  static getCompanyOrders(id) async {
+    var response = await getData('/company/$id/order');
+    List<dynamic> list = jsonDecode(response.body);
+    return list;
+  }
+
+  static setHome(var lat, var lon) async {
+    var response = await authData({
+      'homeLocation': {'lat': lat, 'lon': lon}
+    }, '/user/me');
+    return jsonDecode(response.body);
+  }
+
   static _getToken() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = localStorage.getString('token').replaceAll('"', '');

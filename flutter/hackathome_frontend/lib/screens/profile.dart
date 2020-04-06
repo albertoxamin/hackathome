@@ -1,6 +1,8 @@
+import 'package:anylivery/models/user.dart';
 import 'package:anylivery/values/values.dart';
 import 'package:flutter/material.dart';
 import 'package:anylivery/services/api.dart';
+import 'package:location/location.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -22,9 +24,38 @@ class _ProfileState extends State<Profile> {
 
   void _getProfile() async {
     var usr = await API.getMe();
+    setState(() {
+      user = User.fromJson(usr);
+    });
+  }
+
+  void getLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    var usr =
+        await API.setHome(_locationData.latitude, _locationData.longitude);
     print(usr);
-    print(usr['name']);
-    print(usr['surname']);
     setState(() {
       user = usr;
     });
@@ -50,11 +81,11 @@ class _ProfileState extends State<Profile> {
                   alignment: Alignment.center,
                   children: [
                     CircleAvatar(
-                            backgroundImage: NetworkImage(
-                            (user != null)?user['picture']:"",
-                            ),
-                          radius: 75,
-                          ),
+                      backgroundImage: NetworkImage(
+                        (user != null) ? user.picture : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fthumbs.dreamstime.com%2Ft%2Fdefault-avatar-profile-icon-default-avatar-profile-icon-grey-photo-placeholder-illustrations-vectors-105356015.jpg&f=1&nofb=1",
+                      ),
+                      radius: 75,
+                    ),
                     Positioned(
                       top: 61,
                       right: 0,
@@ -84,7 +115,7 @@ class _ProfileState extends State<Profile> {
             Container(
               margin: EdgeInsets.only(top: 27),
               child: Text(
-                (user != null) ? "${user['name']} ${user['surname']}" : "",
+                (user != null) ? "${user.name} ${user.surname}" : "",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.primaryText,
@@ -98,7 +129,7 @@ class _ProfileState extends State<Profile> {
             Container(
               margin: EdgeInsets.only(top: 43),
               child: Text(
-                "Posizione consegna non impostata",
+                (user != null) ? "${user.homeLocation.lat} ${user.homeLocation.lon}" : "",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   color: AppColors.primaryText,
@@ -110,7 +141,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             RaisedButton.icon(
-                onPressed: () => {print("chenge loc")},
+                onPressed: getLocation,
                 icon: Icon(Icons.home),
                 label: Text("Cambia Posizione")),
             RaisedButton.icon(
