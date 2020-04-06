@@ -1,4 +1,5 @@
 import 'package:anylivery/models/user.dart';
+import 'package:anylivery/screens/new_shop.dart';
 import 'package:anylivery/values/values.dart';
 import 'package:flutter/material.dart';
 import 'package:anylivery/services/api.dart';
@@ -138,7 +139,14 @@ class _ProfileState extends State<Profile> {
                 icon: Icon(Icons.home),
                 label: Text("Cambia Posizione")),
             RaisedButton.icon(
-                onPressed: () => {print('new store')},
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewShopForm(),
+                    ),
+                  )
+                  },
                 icon: Icon(Icons.store),
                 label: Text("Apri un negozio")),
             RaisedButton(

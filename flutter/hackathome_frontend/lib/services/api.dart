@@ -52,12 +52,27 @@ class API {
 
   static planDelivery(
       String companyId, DateTime date, List<String> orders) async {
-    print("qua arriva");
     var response = await postData(
         {'date': date.toIso8601String(), 'orders': orders},
         '/company/$companyId/delivery');
     dynamic obj = jsonDecode(response.body);
     return obj['orders'];
+  }
+
+  static createCompany(
+      String name, String description, String logo, num lat, num lon) async {
+    var response = await postData(
+        {
+          'name':name,
+          'description':description,
+          'logo':logo,
+          'location':{
+            'lat':lat,
+            'lon':lon
+          }
+        },
+        '/company/my');
+    return jsonDecode(response.body);
   }
 
   static sendOrder(

@@ -172,6 +172,7 @@ class _ShopDetailState extends State<ShopDetailScreen> {
       isOnCart: isInCart(goods[i]),
       addCb: () => addToCart(goods[i]),
       removeCb: () => removeFromCart(goods[i]),
+      ownerView: widget.isOwner,
     );
   }
 }

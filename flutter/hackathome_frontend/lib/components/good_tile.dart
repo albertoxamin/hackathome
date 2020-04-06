@@ -6,6 +6,7 @@ class GoodTile extends StatefulWidget {
   final Function addCb;
   final Function removeCb;
   final bool isOnCart;
+  final bool ownerView;
 
   // In the constructor, require a Todo.
   GoodTile(
@@ -13,6 +14,7 @@ class GoodTile extends StatefulWidget {
       @required this.good,
       @required this.addCb,
       @required this.removeCb,
+      @required this.ownerView,
       @required this.isOnCart})
       : super(key: key);
 
@@ -23,10 +25,9 @@ class GoodTile extends StatefulWidget {
 class _GoodTileState extends State<GoodTile> {
   getItems(Good good) {
     List<Widget> res = [];
-    if (good.stockQty != null)
-      res.add(Text("Disponibili: ${good.stockQty}"));
-    if (good.volume != null)
-      res.add(Text("Dimensioni: ${good.volume}"));
+    if (good.stockQty != null) res.add(Text("Disponibili: ${good.stockQty}"));
+    if (good.volume != null) res.add(Text("Dimensioni: ${good.volume}"));
+    if (widget.ownerView) return res;
     if (!widget.isOnCart)
       res.add(Padding(
         padding: const EdgeInsets.all(8.0),
@@ -34,9 +35,9 @@ class _GoodTileState extends State<GoodTile> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             RaisedButton.icon(
-              onPressed: widget.addCb,
-              icon: Icon(Icons.add_shopping_cart),
-              label: Text("+1"))
+                onPressed: widget.addCb,
+                icon: Icon(Icons.add_shopping_cart),
+                label: Text("+1"))
           ],
         ),
       ));
@@ -47,10 +48,12 @@ class _GoodTileState extends State<GoodTile> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             RaisedButton.icon(
-              onPressed: widget.addCb,
-              icon: Icon(Icons.add_shopping_cart),
-              label: Text("+1")),
-            SizedBox(width: 20,),
+                onPressed: widget.addCb,
+                icon: Icon(Icons.add_shopping_cart),
+                label: Text("+1")),
+            SizedBox(
+              width: 20,
+            ),
             RaisedButton.icon(
                 color: Colors.redAccent,
                 textColor: Colors.white,
@@ -69,12 +72,18 @@ class _GoodTileState extends State<GoodTile> {
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ExpansionTile(
           // isOnCart: _selected,
-          leading: (widget.good.picture != null)? CircleAvatar(
-            backgroundImage: NetworkImage(widget.good.picture),
-          ):null,
+          leading: (widget.good.picture != null)
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(widget.good.picture),
+                )
+              : null,
           title: Text(widget.good.name),
           subtitle: Text(widget.good.description),
-          trailing: (widget.good.price != null) ? Text(widget.good.price.toString() + " €") : Container(width: 0,),
+          trailing: (widget.good.price != null)
+              ? Text(widget.good.price.toString() + " €")
+              : Container(
+                  width: 0,
+                ),
           children: getItems(widget.good),
           // onLongPress: select // what should I put here,
         )
