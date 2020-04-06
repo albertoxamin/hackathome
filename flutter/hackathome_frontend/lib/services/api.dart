@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:anylivery/models/good.dart';
 import 'package:anylivery/models/order.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,6 +73,18 @@ class API {
           }
         },
         '/company/my');
+    return jsonDecode(response.body);
+  }
+  static createGood(String compId,
+      String name, String description, String picture, Volume vol) async {
+    var response = await postData(
+        {
+          'name':name,
+          'description':description,
+          'picture':picture,
+          'volume':vol.toJson()
+        },
+        '/company/$compId/good');
     return jsonDecode(response.body);
   }
 

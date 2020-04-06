@@ -2,6 +2,7 @@ import 'package:anylivery/components/good_tile.dart';
 import 'package:anylivery/models/good.dart';
 import 'package:anylivery/models/order.dart';
 import 'package:anylivery/screens/company_orders_screen.dart';
+import 'package:anylivery/screens/new_good.dart';
 import 'package:anylivery/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:anylivery/models/company.dart';
@@ -120,7 +121,14 @@ class _ShopDetailState extends State<ShopDetailScreen> {
       ),
       floatingActionButton: (widget.isOwner)
           ? FloatingActionButton.extended(
-              onPressed: () => {}, label: Text("Aggiungi merce"))
+              onPressed: () => {
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewGoodForm(company: widget.company,)
+                      ),
+                    )
+              }, label: Text("Aggiungi merce"))
           : (cart.length > 0)
               ? FloatingActionButton.extended(
                   onPressed: placeOrder,
@@ -141,9 +149,9 @@ class _ShopDetailState extends State<ShopDetailScreen> {
                   height: 0,
                 ),
       body: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.only(right: 16.0, left: 16.0),
           child: ListView.builder(
-            itemCount: goods.length + 1,
+            itemCount: goods.length + 2,
             itemBuilder: (BuildContext context, int position) {
               return getRow(position);
             },
@@ -154,11 +162,15 @@ class _ShopDetailState extends State<ShopDetailScreen> {
   Widget getRow(int i) {
     if (i == 0) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Image.network(
-              "https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=7K7d_HphcjV8P69RwYuJ2zOUpeYB95ESYfjkkS24Us4&c=${widget.company.location}&z=13"),
+            "https://image.maps.ls.hereapi.com/mia/1.6/mapview?apiKey=7K7d_HphcjV8P69RwYuJ2zOUpeYB95ESYfjkkS24Us4&c=${widget.company.location}&z=13",
+            fit: BoxFit.cover,
+          ),
           Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.only(left: 10, right: 10),
               child: Text(
                 widget.company.description,
                 textAlign: TextAlign.center,
@@ -167,12 +179,17 @@ class _ShopDetailState extends State<ShopDetailScreen> {
       );
     }
     i = i - 1;
-    return GoodTile(
-      good: goods[i],
-      isOnCart: isInCart(goods[i]),
-      addCb: () => addToCart(goods[i]),
-      removeCb: () => removeFromCart(goods[i]),
-      ownerView: widget.isOwner,
-    );
+    if (i < goods.length)
+      return GoodTile(
+        good: goods[i],
+        isOnCart: isInCart(goods[i]),
+        addCb: () => addToCart(goods[i]),
+        removeCb: () => removeFromCart(goods[i]),
+        ownerView: widget.isOwner,
+      );
+    else
+      return SizedBox(
+        height: 100,
+      );
   }
 }

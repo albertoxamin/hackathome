@@ -3,16 +3,18 @@ class Volume {
   num depth;
   num height;
 
+  Volume(w, d, h)
+      : width = w,
+        depth = d,
+        height = h;
+
   Volume.fromJson(Map<String, dynamic> json)
       : width = json['width'],
         depth = json['depth'],
         height = json['height'];
 
-  Map<String, dynamic> toJson() => {
-        "width": width,
-        "depth": depth,
-        "height": height
-      };
+  Map<String, dynamic> toJson() =>
+      {"width": width, "depth": depth, "height": height};
 
   @override
   String toString() {
